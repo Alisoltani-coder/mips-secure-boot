@@ -13,6 +13,7 @@ module ALU
             3'b010: result = a & b;
             3'b100: result = a ^ b; //XOR
             3'b110: result = a - b;
+            3'b111: result = (a < b) ? 32'd1 : 32'd0; // SLT
             default: result = 32'd0;
         endcase
         zero = (result == 32'd0) ? 1'b1 : 1'b0;

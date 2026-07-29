@@ -12,6 +12,7 @@ module Controller
     output reg RegDst,
     output reg Branch,
     output reg Bne,
+    output reg Jump,
     output reg Mode_Bit,
     output reg [2:0] ALUControl
 );
@@ -25,6 +26,7 @@ module Controller
         RegDst = 1'b0;
         Branch = 1'b0;
         Bne = 1'b0;
+        Jump = 1'b0;
         ALUControl = 3'b000;
 
         case (opcode)
@@ -39,6 +41,7 @@ module Controller
                     6'b100100: ALUControl = 3'b010; // and
                     6'b100101: ALUControl = 3'b001; // or
                     6'b100110: ALUControl = 3'b100; // xor
+                    6'b101010: ALUControl = 3'b111; // slt
                     default: ALUControl = 3'b000;
                 endcase
             end
@@ -77,8 +80,8 @@ module Controller
                 Bne = 1'b1;
                 ALUControl = 3'b110; // sub
             end
-            6'b000010: begin // j
-                // jump control is handled outside the controller
+            6'b000010: begin
+                Jump = 1'b1;
             end
             default: begin
             end
