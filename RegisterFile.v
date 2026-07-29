@@ -11,10 +11,10 @@ module RegisterFile
     output reg [31:0] read_data2
 );
     reg [31:0] registers [31:0];
+    integer i;
 
     always @(posedge clk or posedge rst) begin
         if (rst) begin
-            integer i;
             for (i = 0; i < 32; i = i + 1) begin
                 registers[i] <= 32'd0;
             end

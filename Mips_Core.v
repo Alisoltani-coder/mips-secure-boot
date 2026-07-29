@@ -23,6 +23,10 @@ module Mips_Core
     wire zero;
     wire [31:0] Branch_address;
     wire PCSrc;
+    
+    wire Jump; 
+    wire [31:0] pc_plus_4; 
+    wire [31:0] Jump_address; 
 
     Controller controller (
         .opcode(instruction[31:26]),
@@ -37,9 +41,11 @@ module Mips_Core
         .RegDst(RegDst),
         .Branch(Branch),
         .Bne(Bne),
+        .Jump(Jump),
         .Mode_Bit(Mode_Bit),
         .ALUControl(ALUControl)
     );
+    
     RegisterFile register_file (
         .clk(clk),
         .rst(rst),
@@ -51,6 +57,7 @@ module Mips_Core
         .read_data1(read_data1),
         .read_data2(read_data2)
     );
+    
     ALU alu (
         .a(read_data1),
         .b(ALUSrc ? {{16{instruction[15]}}, instruction[15:0]} : read_data2),
@@ -60,14 +67,18 @@ module Mips_Core
     );
 
     assign write_data = read_data2;
-    assign Branch_address = pc + 4 + ({{14{instruction[15]}}, instruction[15:0], 2'b00});
+    
+    assign pc_plus_4 = pc + 4;
+    assign Branch_address = pc_plus_4 + ({{14{instruction[15]}}, instruction[15:0], 2'b00});
     assign PCSrc = (Branch & zero) | (Bne & ~zero);
+    
+    assign Jump_address = {pc_plus_4[31:28], instruction[25:0], 2'b00};
 
     always @(posedge clk or posedge rst) begin
         if(rst) begin
             pc <= 32'd0;
         end else begin
-            pc <= PCSrc ? Branch_address : pc + 4;
+            pc <= Jump ? Jump_address : (PCSrc ? Branch_address : pc_plus_4);
         end
     end
 endmodule
