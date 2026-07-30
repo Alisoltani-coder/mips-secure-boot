@@ -18,15 +18,8 @@ module User_RAM(
         end
     end
 
-    integer i;
-
-    always @(posedge clk or posedge rst) begin
-        if(rst) begin
-            
-            for (i = 0; i < 1024; i = i + 1) begin
-                ram[i] <= 32'd0;
-            end
-        end else if (RAM_Write == 1'b1) begin
+    always @(posedge clk) begin
+        if (RAM_Write == 1'b1) begin
             ram[address[11:2]] <= write_data;
         end
     end
