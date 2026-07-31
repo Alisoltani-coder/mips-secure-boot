@@ -21,7 +21,6 @@ module Top_System(
      assign instruction = (pc >= 32'h0000 && pc <= 32'h0FFF) ? rom_inst_out :
                      (pc >= 32'h1000 && pc <= 32'h1FFF) ? ram_inst_out : 32'd0;
 
-    // مسیر خواندن داده: انتخاب داده خروجی بر اساس مجوزهای روتر
     assign read_data = (ROM_Read == 1'b1) ? rom_data_out :
                        (RAM_Read == 1'b1) ? ram_data_out :
                        (Crypto_Read == 1'b1) ? crypto_data : 32'd0;
