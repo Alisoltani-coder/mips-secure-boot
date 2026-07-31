@@ -26,5 +26,7 @@ To verify the functionality of the system on either a Windows or Ubuntu Linux en
 5.  **Observation:** Add the top-level signals (such as `pc`, `Mode_Bit`, `Watchdog_rst`, and registers) to the Wave window. Type `run -all` in the transcript or run the simulation for at least `2000 ns`. Observe the output messages in the transcript console and analyze the signal transitions in the Wave window.
 
 ## Authors
-*   Mohammad Hosseini
+*   Mohammad Hassan Hosseini
+*   Samyar Safari
 *   Ali Soltani
+*   Taha Samadi
