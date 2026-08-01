@@ -12,17 +12,17 @@ module Top_System(
     
     wire RAM_Write, RAM_Read, ROM_Read, Crypto_Read, Crypto_Write;
     
-    wire [31:0] rom_data;
-    wire [31:0] ram_data;
+    wire [31:0] rom_inst_out, rom_data_out;
+    wire [31:0] ram_inst_out, ram_data_out;
     wire [31:0] crypto_data;
 
     assign sys_rst = rst_button | Watchdog_rst;
 
-    assign instruction = (pc >= 32'h0000 && pc <= 32'h0FFF && Mode_Bit == 1'b1) ? rom_data :
-                         (pc >= 32'h1000 && pc <= 32'h1FFF) ? ram_data : 32'd0;
+     assign instruction = (pc >= 32'h0000 && pc <= 32'h0FFF) ? rom_inst_out :
+                     (pc >= 32'h1000 && pc <= 32'h1FFF) ? ram_inst_out : 32'd0;
 
-    assign read_data = (ROM_Read == 1'b1) ? rom_data :
-                       (RAM_Read == 1'b1) ? ram_data :
+    assign read_data = (ROM_Read == 1'b1) ? rom_data_out :
+                       (RAM_Read == 1'b1) ? ram_data_out :
                        (Crypto_Read == 1'b1) ? crypto_data : 32'd0;
     
     Mips_Core core (
@@ -58,19 +58,23 @@ module Top_System(
     );
 
     Boot_ROM rom_inst (
-        .address(pc < 32'h1000 ? pc : alu_result),
-        .ROM_Read(1'b1), 
-        .read_data(rom_data)
+        .pc_address(pc),
+        .data_address(alu_result),
+        .ROM_Read(ROM_Read), 
+        .instruction_out(rom_inst_out),
+        .data_out(rom_data_out)
     );
 
     User_RAM ram_inst (
         .clk(clk),
         .rst(sys_rst),
-        .address((MemRead || MemWrite) ? alu_result : pc),
+        .pc_address(pc),
+        .data_address(alu_result),
         .write_data(write_data),
-        .RAM_Read(1'b1),
+        .RAM_Read(RAM_Read),
         .RAM_Write(RAM_Write),
-        .read_data(ram_data)
+        .instruction_out(ram_inst_out),
+        .data_out(ram_data_out)
     );
 
     Crypto_Accelerator crypto_inst (
